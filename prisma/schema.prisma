@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -15,8 +8,93 @@ datasource db {
 }
 
 model User {
-  // id: ユーザーの一意なID。自動インクリメントされるプライマリキーとして設定
-  id   Int    @id @default(autoincrement())
-  // name: ユーザーの名前。文字列型で、nullを許可しない（必須）
-  name String
+  id          Int          @id @default(autoincrement())
+  name        String
+  email       String       @unique
+  password    String
+  color       String       // コメント用のマーカー色
+  iconUrl     String?      // アイコン画像のURL
+  userPapers  UserPaper[]
+  createdAt   DateTime     @default(now())
+}
+
+model Paper {
+  id          Int          @id @default(autoincrement())
+  title       String
+  authors     String
+  year        Int
+  pdfUrl      String       // PDFの格納先（S3などでもOK）
+  categories  PaperCategory[]
+  userPapers  UserPaper[]
+  createdAt   DateTime     @default(now())
+}
+
+model UserPaper {
+  id          Int          @id @default(autoincrement())
+  user        User         @relation(fields: [userId], references: [id])
+  userId      Int
+  paper       Paper        @relation(fields: [paperId], references: [id])
+  paperId     Int
+
+  comments    Comment[]
+  likes       Like[]
+  bookmarks   Bookmark[]
+  progress    Progress?
+
+  createdAt   DateTime     @default(now())
+
+  @@unique([userId, paperId])  // 同じ論文を1人が複数登録できないようにする
+}
+
+model Comment {
+  id          Int          @id @default(autoincrement())
+  userPaper   UserPaper    @relation(fields: [userPaperId], references: [id])
+  userPaperId Int
+  body        String
+  page        Int
+  x           Float
+  y           Float
+  expanded    Boolean      @default(false)
+  hidden      Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+}
+
+model Like {
+  id          Int          @id @default(autoincrement())
+  userPaper   UserPaper    @relation(fields: [userPaperId], references: [id])
+  userPaperId Int
+  createdAt   DateTime     @default(now())
+}
+
+model Bookmark {
+  id          Int          @id @default(autoincrement())
+  userPaper   UserPaper    @relation(fields: [userPaperId], references: [id])
+  userPaperId Int
+  x           Float
+  y           Float
+  createdAt   DateTime     @default(now())
+}
+
+model Progress {
+  id          Int          @id @default(autoincrement())
+  userPaper   UserPaper    @relation(fields: [userPaperId], references: [id])
+  userPaperId Int          @unique
+  page        Int?
+  percent     Float?
+  note        String?
+  updatedAt   DateTime     @updatedAt
+}
+
+model Category {
+  id          Int          @id @default(autoincrement())
+  name        String
+  papers      PaperCategory[]
+}
+
+model PaperCategory {
+  id          Int          @id @default(autoincrement())
+  paper       Paper        @relation(fields: [paperId], references: [id])
+  paperId     Int
+  category    Category     @relation(fields: [categoryId], references: [id])
+  categoryId  Int
 }

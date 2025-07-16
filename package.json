@@ -4,7 +4,9 @@
   "description": "webpro 2025",
   "main": "index.js",
   "scripts": {
-    "start": "tsx index.ts",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "db:dev": "prisma dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,14 +14,24 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^6.10.1",
+    "@prisma/client": "^6.11.1",
+    "bcrypt": "^6.0.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
-    "prisma": "^6.10.1",
+    "formidable": "^3.5.4",
+    "next": "^15.3.5",
+    "next-auth": "^4.24.11",
+    "pdfjs-dist": "5.3.31",
+    "prisma": "^6.11.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-pdf": "10.0.1",
     "tsx": "^4.20.3"
   },
   "devDependencies": {
     "@types/node": "^24.0.4",
+    "@types/pdfjs-dist": "^2.10.377",
+    "@types/react": "19.1.8",
     "typescript": "^5.8.3"
   }
 }
